@@ -1,0 +1,13 @@
+00E0 // clear screen
+6500 // set V5 to 0 (x coord for drawing sprite)
+6600 // set V6 to 0 (y coord for drawing sprite)
+600F // set V0 to F (value to load timers with)
+F015 // set the delay timer to the value of V0 (A)
+F018 // set sound timer to value of V0 (A)
+F029 // set I to the location of the sprite for the character in V0
+00E0 // clear screen
+D565 // draw sprite pointed to by I at (V5, V6), 5 pixels high (font height)
+F007 // set v0 to the value of the delay timer
+3000 // skip next instruction if VX equals 00
+120C // go to F029 instruction above. (memory starts at 200)
+1206 // go to 600F instruction above. (memory starts at 200)

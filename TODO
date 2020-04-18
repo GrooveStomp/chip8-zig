@@ -1,0 +1,7 @@
+- BLINKY doesn't seem to work at all
+
+- SYZYGY appears bugged
+  It appears to work normally for a while, then just freezes.
+  The left boundary wall doesn't render
+
+- VERS doesn't draw all the edges of the screen properly?
