@@ -41,14 +41,14 @@ pub const Sound = struct {
     pub fn stop(sound: *Sound) void {
         var err = c.soundio_outstream_pause(sound.stream, true);
         if (err != c.SoundIoErrorNone) {
-            std.debug.warn("Unable to stop device: {}\n", .{ c.soundio_strerror(err) });
+            std.debug.warn("Unable to stop device: {}\n", .{c.soundio_strerror(err)});
         }
     }
 
     pub fn start(sound: *Sound) void {
         var err = c.soundio_outstream_pause(sound.stream, false);
         if (err != c.SoundIoErrorNone) {
-            std.debug.warn("Unable to start device: {}\n", .{ c.soundio_strerror(err) });
+            std.debug.warn("Unable to start device: {}\n", .{c.soundio_strerror(err)});
         }
     }
 };
@@ -91,7 +91,7 @@ fn writeCallback(maybe_out: ?[*]c.SoundIoOutStream, frame_count_min: c_int, fram
             maybe_out,
             @ptrCast([*]?[*]c.SoundIoChannelArea, &areas),
             &frame_count,
-        )) catch |err| std.debug.panic("Write failed: {}", .{ @errorName(err) });
+        )) catch |err| std.debug.panic("Write failed: {}", .{@errorName(err)});
 
         if (frame_count == 0) break;
 
@@ -113,7 +113,7 @@ fn writeCallback(maybe_out: ?[*]c.SoundIoOutStream, frame_count_min: c_int, fram
         seconds_offset = mod.ipart;
         seconds_offset += mod.fpart;
 
-        sioErr(c.soundio_outstream_end_write(out)) catch |err| std.debug.panic("End write failed: {}", .{ @errorName(err) });
+        sioErr(c.soundio_outstream_end_write(out)) catch |err| std.debug.panic("End write failed: {}", .{@errorName(err)});
 
         frames_left -= frame_count;
     }

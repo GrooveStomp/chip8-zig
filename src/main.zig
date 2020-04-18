@@ -256,7 +256,7 @@ fn debug(os: *os_pkg.Os, cpu: *cpu_pkg.Cpu) void {
     std.debug.warn("v00[{X:0>2}] v04[{X:0>2}] v08[{X:0>2}] v12[{X:0>2}]\n", .{ cpu.v[0x0], cpu.v[0x4], cpu.v[0x8], cpu.v[0xC] });
     std.debug.warn("v01[{X:0>2}] v05[{X:0>2}] v09[{X:0>2}] v13[{X:0>2}]\n", .{ cpu.v[0x1], cpu.v[0x5], cpu.v[0x9], cpu.v[0xD] });
     std.debug.warn("v02[{X:0>2}] v06[{X:0>2}] v10[{X:0>2}] v14[{X:0>2}]\n", .{ cpu.v[0x2], cpu.v[0x6], cpu.v[0xA], cpu.v[0xE] });
-    std.debug.warn("v03[{X:0>2}] v07[{X:0>2}] v11[{X:0>2}] v15[{X:0>2}]\n", .{ cpu.v[0x3], cpu.v[0x7], cpu.v[0xB], cpu.v[0xF]});
+    std.debug.warn("v03[{X:0>2}] v07[{X:0>2}] v11[{X:0>2}] v15[{X:0>2}]\n", .{ cpu.v[0x3], cpu.v[0x7], cpu.v[0xB], cpu.v[0xF] });
 
     os.putPixel(16, 0, shortToColor(cpu.pc));
     os.putPixel(16, 1, shortToColor(@intCast(u16, cpu.sp)));
@@ -265,9 +265,9 @@ fn debug(os: *os_pkg.Os, cpu: *cpu_pkg.Cpu) void {
     os.putPixel(18, 0, byteToColor(cpu.timer_delay));
     os.putPixel(18, 1, byteToColor(cpu.timer_sound));
 
-    std.debug.warn("pc[{X:0>4}] sp[  {X:0>2}]\n", .{cpu.pc, cpu.sp});
-    std.debug.warn(" i[{X:0>4}] fp[{X:0>4}]\n", .{cpu.i, cpu.fp});
-    std.debug.warn(" d[  {X:0>2}]  s[  {X:0>2}]\n", .{cpu.timer_delay, cpu.timer_sound});
+    std.debug.warn("pc[{X:0>4}] sp[  {X:0>2}]\n", .{ cpu.pc, cpu.sp });
+    std.debug.warn(" i[{X:0>4}] fp[{X:0>4}]\n", .{ cpu.i, cpu.fp });
+    std.debug.warn(" d[  {X:0>2}]  s[  {X:0>2}]\n", .{ cpu.timer_delay, cpu.timer_sound });
 
     std.debug.warn("opcode: ", .{});
     var mem: []u8 = alloc.alloc(u8, 2) catch {

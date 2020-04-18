@@ -765,9 +765,9 @@ pub fn disassemble(mem: []const u8, len: usize, show_addr_offset: bool) void {
 
         var instruction = decode(opcode);
         if (show_addr_offset) {
-            std.debug.warn("{X:0>4} {X:0>4} {} ", .{i, opcode, instruction.name});
+            std.debug.warn("{X:0>4} {X:0>4} {} ", .{ i, opcode, instruction.name });
         } else {
-            std.debug.warn("{X:0>4} {} ", .{opcode, instruction.name});
+            std.debug.warn("{X:0>4} {} ", .{ opcode, instruction.name });
         }
 
         // Zig doesn't allow doing a switch on a non-comptime value.

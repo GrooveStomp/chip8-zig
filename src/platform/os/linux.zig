@@ -68,7 +68,7 @@ pub fn newPixel(r: f32, g: f32, b: f32, a: f32) Pixel {
     var green = @floatToInt(u8, g * 255.0);
     var blue = @floatToInt(u8, b * 255.0);
     var alpha = @floatToInt(u8, a * 255.0);
-    var p = Pixel{ .rgba = Rgba{ .r=red, .g=green, .b=blue, .a=alpha } };
+    var p = Pixel{ .rgba = Rgba{ .r = red, .g = green, .b = blue, .a = alpha } };
     return p;
 }
 
@@ -82,7 +82,7 @@ pub const Os = struct {
     gl_device_ctx: c.GLXContext = undefined,
     gl_render_ctx: c.GLXContext = undefined,
     gl_buffer: c.GLuint = undefined,
-    gl_swap_interval: ?extern fn() void = null,
+    gl_swap_interval: ?extern fn () void = null,
     texture: []u32 = undefined,
     has_input_focus: bool = false,
     window_atts: WindowAttributes = undefined,
@@ -90,7 +90,7 @@ pub const Os = struct {
     texture_height: u32 = undefined,
 
     pub fn init(os: *Os, width: u32, height: u32, scale: u32, alloc: *std.mem.Allocator) !void {
-        os.window_atts = WindowAttributes {
+        os.window_atts = WindowAttributes{
             .screen_width = width * scale,
             .screen_height = height * scale,
             .pixel_width = 1,
@@ -114,7 +114,7 @@ pub const Os = struct {
 
         os.window_root = c.XDefaultRootWindow(os.display);
 
-        var gl_atts = [_]c.GLint{c.GLX_RGBA, c.GLX_DEPTH_SIZE, 24, c.GLX_DOUBLEBUFFER, c.None};
+        var gl_atts = [_]c.GLint{ c.GLX_RGBA, c.GLX_DEPTH_SIZE, 24, c.GLX_DOUBLEBUFFER, c.None };
         os.visual_info = c.glXChooseVisual(os.display, 0, @ptrCast([*c]c_int, &gl_atts));
         if (os.visual_info == null) return error.Unexpected;
 
@@ -164,7 +164,7 @@ pub const Os = struct {
         self.gl_swap_interval = c.glXGetProcAddress("glXSwapIntervalEXT");
 
         if (self.gl_swap_interval) |func| {
-            @ptrCast(fn(display: ?*c.Display, drawable: c.Drawable, interval: i32)void, func)(self.display, self.window, 0);
+            @ptrCast(fn (display: ?*c.Display, drawable: c.Drawable, interval: i32) void, func)(self.display, self.window, 0);
         } else {
             std.debug.warn("Couldn't setup gl_swap_interval, so framerate is capped to monitor's refresh rate\n", .{});
         }
@@ -205,8 +205,7 @@ pub const Os = struct {
             c.ClientMessage => {
                 // X-atom is inactive?
             },
-            else => {
-            },
+            else => {},
         }
     }
 
@@ -230,7 +229,9 @@ pub const Os = struct {
 
         c.glTexSubImage2D(
             c.GL_TEXTURE_2D,
-            0, 0, 0,
+            0,
+            0,
+            0,
             @intCast(c_int, self.texture_width),
             @intCast(c_int, self.texture_height),
             c.GL_RGBA,
@@ -239,10 +240,14 @@ pub const Os = struct {
         );
 
         c.glBegin(c.GL_QUADS);
-            c.glTexCoord2f(0.0, 1.0); c.glVertex3f(-1.0 + (self.window_atts.sub_pixel_offset_x), -1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
-            c.glTexCoord2f(0.0, 0.0); c.glVertex3f(-1.0 + (self.window_atts.sub_pixel_offset_x),  1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
-            c.glTexCoord2f(1.0, 0.0); c.glVertex3f( 1.0 + (self.window_atts.sub_pixel_offset_x),  1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
-            c.glTexCoord2f(1.0, 1.0); c.glVertex3f( 1.0 + (self.window_atts.sub_pixel_offset_x), -1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
+        c.glTexCoord2f(0.0, 1.0);
+        c.glVertex3f(-1.0 + (self.window_atts.sub_pixel_offset_x), -1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
+        c.glTexCoord2f(0.0, 0.0);
+        c.glVertex3f(-1.0 + (self.window_atts.sub_pixel_offset_x), 1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
+        c.glTexCoord2f(1.0, 0.0);
+        c.glVertex3f(1.0 + (self.window_atts.sub_pixel_offset_x), 1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
+        c.glTexCoord2f(1.0, 1.0);
+        c.glVertex3f(1.0 + (self.window_atts.sub_pixel_offset_x), -1.0 + (self.window_atts.sub_pixel_offset_y), 0.0);
         c.glEnd();
 
         c.glXSwapBuffers(self.display, self.window);
