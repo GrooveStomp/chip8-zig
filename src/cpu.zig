@@ -118,8 +118,8 @@ fn CLS(cpu: *Cpu, opcode: u16) void {
 /// Chip-8 screen and sprites.
 ///
 fn DRW(cpu: *Cpu, opcode: u16) void {
-    var x = cpu.v[ @intCast(u4, nibbleAt(cpu.opcode, 2)) ];
-    var y = cpu.v[ @intCast(u4, nibbleAt(cpu.opcode, 1)) ];
+    var x = cpu.v[@intCast(u4, nibbleAt(cpu.opcode, 2))];
+    var y = cpu.v[@intCast(u4, nibbleAt(cpu.opcode, 1))];
     var height = nibbleAt(cpu.opcode, 0);
 
     cpu.v[0xF] = 0;
@@ -127,7 +127,7 @@ fn DRW(cpu: *Cpu, opcode: u16) void {
     var row: u8 = 0;
     while (row < height) : (row += 1) {
         var pixel: u8 = cpu.bus.readMemory(cpu.i + row);
-        const masks = [_]u8{0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+        const masks = [_]u8{ 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 
         for (masks) |mask, col| {
             if ((pixel & mask) == 0) {
@@ -485,8 +485,8 @@ const fontset = [80]u8{
 
 const Instruction = struct {
     name: []const u8 = undefined,
-    operation: fn(*Cpu, u16) void = undefined,
-    address_mode: fn(*Cpu, u16) void = undefined,
+    operation: fn (*Cpu, u16) void = undefined,
+    address_mode: fn (*Cpu, u16) void = undefined,
 };
 
 const OperandType = enum {
@@ -508,12 +508,12 @@ const Operand = union(OperandType) {
 
     pub fn debug(op: Operand) void {
         switch (op) {
-            Operand.None => std.debug.warn("None"),
-            Operand.Address => |addr| std.debug.warn("Address[{X:0>4}]", addr),
-            Operand.DelayTimer => std.debug.warn("DelayTimer"),
-            Operand.Immediate => |val| std.debug.warn("Immediate[{X:0>2}]", val),
-            Operand.Register => |val| std.debug.warn("Register[{X}]", val),
-            Operand.Key => std.debug.warn("Key"),
+            Operand.None => std.debug.warn("None", .{}),
+            Operand.Address => |addr| std.debug.warn("Address[{X:0>4}]", .{addr}),
+            Operand.DelayTimer => std.debug.warn("DelayTimer", .{}),
+            Operand.Immediate => |val| std.debug.warn("Immediate[{X:0>2}]", .{val}),
+            Operand.Register => |val| std.debug.warn("Register[{X}]", .{val}),
+            Operand.Key => std.debug.warn("Key", .{}),
         }
     }
 };
@@ -540,16 +540,23 @@ pub const Cpu = struct {
     bus: *bus_pkg.Bus,
 
     // Cpu-specific data
-    v: [16]u8 = undefined, /// general purpose registers
-    i: u12 = 0x0000, /// index register
-    pc: u12 = 0x0200, /// program counter
+    /// general purpose registers
+    v: [16]u8 = undefined,
+    /// index register
+    i: u12 = 0x0000,
+    /// program counter
+    pc: u12 = 0x0200,
     stack: [16]u12 = undefined,
-    sp: u12 = 0x0000, /// stack pointer
-    fp: u12 = 0x0000, /// font pointer
+    /// stack pointer
+    sp: u12 = 0x0000,
+    /// font pointer
+    fp: u12 = 0x0000,
 
     // Counters
-    timer_delay: u8 = 0, /// counter
-    timer_sound: u8 = 0, /// counter
+    /// counter
+    timer_delay: u8 = 0,
+    /// counter
+    timer_sound: u8 = 0,
 
     // Current instruction information
     opcode: u16 = 0x00,
@@ -686,18 +693,18 @@ fn lowByte(short: u16) u8 {
 fn decode(opcode: u16) Instruction {
     var nibble = nibbleAt(opcode, 3);
     switch (nibble) {
-        0x1 => return Instruction{ .name = "JP",   .operation = JP,   .address_mode = ABS },
+        0x1 => return Instruction{ .name = "JP", .operation = JP, .address_mode = ABS },
         0x2 => return Instruction{ .name = "CALL", .operation = CALL, .address_mode = ABS },
-        0x3 => return Instruction{ .name = "SE",   .operation = SE,   .address_mode = BYT },
-        0x4 => return Instruction{ .name = "SNE",  .operation = SNE,  .address_mode = BYT },
-        0x5 => return Instruction{ .name = "SE",   .operation = SE,   .address_mode = RGY },
-        0x6 => return Instruction{ .name = "LD",   .operation = LD,   .address_mode = BYT },
-        0x7 => return Instruction{ .name = "ADD",  .operation = ADD,  .address_mode = BYT },
-        0x9 => return Instruction{ .name = "SNE",  .operation = SNE,  .address_mode = RGY },
-        0xA => return Instruction{ .name = "LDI",  .operation = LDI,  .address_mode = ABS },
-        0xB => return Instruction{ .name = "JPO",  .operation = JPO,  .address_mode = ABS },
-        0xC => return Instruction{ .name = "RND",  .operation = RND,  .address_mode = BYT },
-        0xD => return Instruction{ .name = "DRW",  .operation = DRW,  .address_mode = IMP },
+        0x3 => return Instruction{ .name = "SE", .operation = SE, .address_mode = BYT },
+        0x4 => return Instruction{ .name = "SNE", .operation = SNE, .address_mode = BYT },
+        0x5 => return Instruction{ .name = "SE", .operation = SE, .address_mode = RGY },
+        0x6 => return Instruction{ .name = "LD", .operation = LD, .address_mode = BYT },
+        0x7 => return Instruction{ .name = "ADD", .operation = ADD, .address_mode = BYT },
+        0x9 => return Instruction{ .name = "SNE", .operation = SNE, .address_mode = RGY },
+        0xA => return Instruction{ .name = "LDI", .operation = LDI, .address_mode = ABS },
+        0xB => return Instruction{ .name = "JPO", .operation = JPO, .address_mode = ABS },
+        0xC => return Instruction{ .name = "RND", .operation = RND, .address_mode = BYT },
+        0xD => return Instruction{ .name = "DRW", .operation = DRW, .address_mode = IMP },
 
         0x0 => {
             var low_byte = lowByte(opcode);
@@ -710,39 +717,39 @@ fn decode(opcode: u16) Instruction {
         0x8 => {
             var low_nibble = nibbleAt(opcode, 0);
             switch (low_nibble) {
-                0x00 => return Instruction{ .name = "LD",   .operation = LD,   .address_mode = RGY },
-                0x01 => return Instruction{ .name = "OR",   .operation = OR,   .address_mode = RGY },
-                0x02 => return Instruction{ .name = "AND",  .operation = AND,  .address_mode = RGY },
-                0x03 => return Instruction{ .name = "XOR",  .operation = XOR,  .address_mode = RGY },
-                0x04 => return Instruction{ .name = "ADD",  .operation = ADD,  .address_mode = RGY },
-                0x05 => return Instruction{ .name = "SUB",  .operation = SUB,  .address_mode = RGY },
-                0x06 => return Instruction{ .name = "SHR",  .operation = SHR,  .address_mode = IMP },
+                0x00 => return Instruction{ .name = "LD", .operation = LD, .address_mode = RGY },
+                0x01 => return Instruction{ .name = "OR", .operation = OR, .address_mode = RGY },
+                0x02 => return Instruction{ .name = "AND", .operation = AND, .address_mode = RGY },
+                0x03 => return Instruction{ .name = "XOR", .operation = XOR, .address_mode = RGY },
+                0x04 => return Instruction{ .name = "ADD", .operation = ADD, .address_mode = RGY },
+                0x05 => return Instruction{ .name = "SUB", .operation = SUB, .address_mode = RGY },
+                0x06 => return Instruction{ .name = "SHR", .operation = SHR, .address_mode = IMP },
                 0x07 => return Instruction{ .name = "SUBN", .operation = SUBN, .address_mode = RGY },
-                0x0E => return Instruction{ .name = "SHL",  .operation = SHL,  .address_mode = IMP },
-                else => return Instruction{ .name = "XXX",  .operation = XXX,  .address_mode = IMP },
+                0x0E => return Instruction{ .name = "SHL", .operation = SHL, .address_mode = IMP },
+                else => return Instruction{ .name = "XXX", .operation = XXX, .address_mode = IMP },
             }
         },
         0xE => {
             var low_byte = lowByte(opcode);
             switch (low_byte) {
-                0x9E => return Instruction{ .name = "SKP",  .operation = SKP,  .address_mode = RGX },
+                0x9E => return Instruction{ .name = "SKP", .operation = SKP, .address_mode = RGX },
                 0xA1 => return Instruction{ .name = "SKNP", .operation = SKNP, .address_mode = RGX },
-                else => return Instruction{ .name = "XXX",  .operation = XXX,  .address_mode = IMP },
+                else => return Instruction{ .name = "XXX", .operation = XXX, .address_mode = IMP },
             }
         },
         0xF => {
             var low_byte = lowByte(opcode);
             switch (low_byte) {
-                0x07 => return Instruction{ .name = "LD",   .operation = LD,   .address_mode = DTT },
-                0x0A => return Instruction{ .name = "LD",   .operation = LD,   .address_mode = KEY },
+                0x07 => return Instruction{ .name = "LD", .operation = LD, .address_mode = DTT },
+                0x0A => return Instruction{ .name = "LD", .operation = LD, .address_mode = KEY },
                 0x15 => return Instruction{ .name = "LDDT", .operation = LDDT, .address_mode = RGX },
                 0x18 => return Instruction{ .name = "LDST", .operation = LDST, .address_mode = RGX },
                 0x1E => return Instruction{ .name = "ADDI", .operation = ADDI, .address_mode = RGX },
-                0x29 => return Instruction{ .name = "LDF",  .operation = LDF,  .address_mode = RGX },
-                0x33 => return Instruction{ .name = "LDB",  .operation = LDB,  .address_mode = RGX },
-                0x55 => return Instruction{ .name = "LDO",  .operation = LDO,  .address_mode = RGX },
-                0x65 => return Instruction{ .name = "LDV",  .operation = LDV,  .address_mode = RGX },
-                else => return Instruction{ .name = "XXX",  .operation = XXX,  .address_mode = IMP },
+                0x29 => return Instruction{ .name = "LDF", .operation = LDF, .address_mode = RGX },
+                0x33 => return Instruction{ .name = "LDB", .operation = LDB, .address_mode = RGX },
+                0x55 => return Instruction{ .name = "LDO", .operation = LDO, .address_mode = RGX },
+                0x65 => return Instruction{ .name = "LDV", .operation = LDV, .address_mode = RGX },
+                else => return Instruction{ .name = "XXX", .operation = XXX, .address_mode = IMP },
             }
         },
         else => return Instruction{ .name = "XXX", .operation = XXX, .address_mode = IMP },
@@ -750,35 +757,35 @@ fn decode(opcode: u16) Instruction {
 }
 
 pub fn disassemble(mem: []const u8, len: usize, show_addr_offset: bool) void {
-    var i:u32 = 0;
+    var i: u32 = 0;
     while (i < len - 1) : (i += 2) {
         var high_byte: u16 = @intCast(u16, mem[i]);
-        var low_byte: u16 = @intCast(u16, mem[i+1]);
+        var low_byte: u16 = @intCast(u16, mem[i + 1]);
         var opcode: u16 = (high_byte << 8) | low_byte;
 
         var instruction = decode(opcode);
         if (show_addr_offset) {
-            std.debug.warn("{X:0>4} {X:0>4} {} ", i, opcode, instruction.name);
+            std.debug.warn("{X:0>4} {X:0>4} {} ", .{ i, opcode, instruction.name });
         } else {
-            std.debug.warn("{X:0>4} {} ", opcode, instruction.name);
+            std.debug.warn("{X:0>4} {} ", .{ opcode, instruction.name });
         }
 
         // Zig doesn't allow doing a switch on a non-comptime value.
         if (instruction.address_mode == ABS) {
-            std.debug.warn("ADDR");
+            std.debug.warn("ADDR", .{});
         } else if (instruction.address_mode == BYT) {
-            std.debug.warn("BYTE");
+            std.debug.warn("BYTE", .{});
         } else if (instruction.address_mode == DTT) {
-            std.debug.warn("DT");
+            std.debug.warn("DT", .{});
         } else if (instruction.address_mode == IMP) {
-            std.debug.warn("   ");
+            std.debug.warn("   ", .{});
         } else if (instruction.address_mode == KEY) {
-            std.debug.warn("KEY");
+            std.debug.warn("KEY", .{});
         } else if (instruction.address_mode == RGX) {
-            std.debug.warn("REGX");
+            std.debug.warn("REGX", .{});
         } else if (instruction.address_mode == RGY) {
-            std.debug.warn("REGY");
+            std.debug.warn("REGY", .{});
         }
-        std.debug.warn("\n");
+        std.debug.warn("\n", .{});
     }
 }

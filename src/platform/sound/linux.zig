@@ -21,7 +21,7 @@ pub const Sound = struct {
 
         sound.device = c.soundio_get_output_device(sound.soundio, dev_index) orelse return error.OutOfMemory;
         sound.stream = c.soundio_outstream_create(sound.device) orelse return error.OutOfMemory;
-        sound.stream.*.format = c.SoundIoFormatFloat32NE;
+        sound.stream.*.format = @intToEnum(c.SoundIoFormat, c.SoundIoFormatFloat32NE);
         sound.stream.*.write_callback = writeCallback;
 
         try sioErr(c.soundio_outstream_open(sound.stream));
@@ -40,15 +40,15 @@ pub const Sound = struct {
 
     pub fn stop(sound: *Sound) void {
         var err = c.soundio_outstream_pause(sound.stream, true);
-        if (@intToEnum(c.SoundIoError, err) != c.SoundIoErrorNone) {
-            std.debug.warn("Unable to stop device: {}\n", c.soundio_strerror(err));
+        if (err != c.SoundIoErrorNone) {
+            std.debug.warn("Unable to stop device: {}\n", .{c.soundio_strerror(err)});
         }
     }
 
     pub fn start(sound: *Sound) void {
         var err = c.soundio_outstream_pause(sound.stream, false);
-        if (@intToEnum(c.SoundIoError, err) != c.SoundIoErrorNone) {
-            std.debug.warn("Unable to start device: {}\n", c.soundio_strerror(err));
+        if (err != c.SoundIoErrorNone) {
+            std.debug.warn("Unable to start device: {}\n", .{c.soundio_strerror(err)});
         }
     }
 };
@@ -71,10 +71,11 @@ fn sioErr(err: c_int) !void {
         .Interrupted => return error.Interrupted,
         .Underflow => return error.Underflow,
         .EncodingString => return error.EncodingString,
+        else => return error.Unknown,
     }
 }
 
-extern fn writeCallback(maybe_out: ?[*]c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) void {
+fn writeCallback(maybe_out: ?[*]c.SoundIoOutStream, frame_count_min: c_int, frame_count_max: c_int) callconv(.C) void {
     const out = @ptrCast(*c.SoundIoOutStream, maybe_out);
     const layout = &out.layout;
     const sample_rate = out.sample_rate;
@@ -90,7 +91,7 @@ extern fn writeCallback(maybe_out: ?[*]c.SoundIoOutStream, frame_count_min: c_in
             maybe_out,
             @ptrCast([*]?[*]c.SoundIoChannelArea, &areas),
             &frame_count,
-        )) catch |err| std.debug.panic("Write failed: {}", @errorName(err));
+        )) catch |err| std.debug.panic("Write failed: {}", .{@errorName(err)});
 
         if (frame_count == 0) break;
 
@@ -112,7 +113,7 @@ extern fn writeCallback(maybe_out: ?[*]c.SoundIoOutStream, frame_count_min: c_in
         seconds_offset = mod.ipart;
         seconds_offset += mod.fpart;
 
-        sioErr(c.soundio_outstream_end_write(out)) catch |err| std.debug.panic("End write failed: {}", @errorName(err));
+        sioErr(c.soundio_outstream_end_write(out)) catch |err| std.debug.panic("End write failed: {}", .{@errorName(err)});
 
         frames_left -= frame_count;
     }
