@@ -1,6 +1,6 @@
 const std = @import("std");
 const time = std.time;
-const alloc = std.heap.direct_allocator;
+const alloc = std.heap.page_allocator;
 
 const platform_input_pkg = @import("platform/input.zig");
 const platform_sound_pkg = @import("platform/sound.zig");
@@ -34,7 +34,7 @@ pub fn main() !u8 {
     defer std.process.argsFree(alloc, args);
 
     if (args.len != 2) {
-        std.debug.warn("Usage: prog file\n");
+        std.debug.warn("Usage: prog file\n", .{});
         return 1;
     }
 
@@ -173,11 +173,11 @@ pub fn main() !u8 {
                 cpu.debugStep(false);
                 cpu.tickTimers();
                 debug(os, cpu);
-                std.debug.warn("\n");
+                std.debug.warn("\n", .{});
                 dumpKeys(input);
-                std.debug.warn("\n");
+                std.debug.warn("\n", .{});
                 dumpMem(0x200, memory.memory[0x200..], @intCast(usize, stat.size));
-                //std.debug.warn("\n");
+                //std.debug.warn("\n", .{});
                 //dumpMem(0x00, memory.memory[0..], @intCast(usize, stat.size) + 0x200);
             }
         } else {
@@ -194,16 +194,16 @@ pub fn main() !u8 {
             }
 
             // debug(os, cpu);
-            // std.debug.warn("\n");
+            // std.debug.warn("\n", .{});
             // dumpKeys(input);
-            // std.debug.warn("\n");
+            // std.debug.warn("\n", .{});
             // dumpMem(0x200, memory.memory[0x200..], @intCast(usize, stat.size));
         }
 
         var y: u32 = 0;
-        while (y < 32) : (y+=1) {
+        while (y < 32) : (y += 1) {
             var x: u32 = 0;
-            while (x < 64) : (x+=1) {
+            while (x < 64) : (x += 1) {
                 if (video.buffer[y * 64 + x] == 0x0) {
                     os.putPixel(x, y, os_pkg.newPixel(0, 0, 0, 1));
                 } else {
@@ -236,10 +236,10 @@ fn shortToColor(v: u16) os_pkg.Pixel {
 }
 
 fn dumpKeys(input: *input_pkg.Input) void {
-    std.debug.warn("k00[{X:1}] k04[{X:1}] k08[{X:1}] k12[{X:1}]\n", input.keys[0x0], input.keys[0x4], input.keys[0x8], input.keys[0xC]);
-    std.debug.warn("k01[{X:1}] k05[{X:1}] k09[{X:1}] k13[{X:1}]\n", input.keys[0x1], input.keys[0x5], input.keys[0x9], input.keys[0xD]);
-    std.debug.warn("k02[{X:1}] k06[{X:1}] k10[{X:1}] k14[{X:1}]\n", input.keys[0x2], input.keys[0x6], input.keys[0xA], input.keys[0xE]);
-    std.debug.warn("k03[{X:1}] k07[{X:1}] k11[{X:1}] k15[{X:1}]\n", input.keys[0x3], input.keys[0x7], input.keys[0xB], input.keys[0xF]);
+    std.debug.warn("k00[{X:1}] k04[{X:1}] k08[{X:1}] k12[{X:1}]\n", .{ input.keys[0x0], input.keys[0x4], input.keys[0x8], input.keys[0xC] });
+    std.debug.warn("k01[{X:1}] k05[{X:1}] k09[{X:1}] k13[{X:1}]\n", .{ input.keys[0x1], input.keys[0x5], input.keys[0x9], input.keys[0xD] });
+    std.debug.warn("k02[{X:1}] k06[{X:1}] k10[{X:1}] k14[{X:1}]\n", .{ input.keys[0x2], input.keys[0x6], input.keys[0xA], input.keys[0xE] });
+    std.debug.warn("k03[{X:1}] k07[{X:1}] k11[{X:1}] k15[{X:1}]\n", .{ input.keys[0x3], input.keys[0x7], input.keys[0xB], input.keys[0xF] });
 }
 
 fn debug(os: *os_pkg.Os, cpu: *cpu_pkg.Cpu) void {
@@ -253,10 +253,10 @@ fn debug(os: *os_pkg.Os, cpu: *cpu_pkg.Cpu) void {
         os.putPixel(1, i, byteToColor(reg));
     }
 
-    std.debug.warn("v00[{X:0>2}] v04[{X:0>2}] v08[{X:0>2}] v12[{X:0>2}]\n", cpu.v[0x0], cpu.v[0x4], cpu.v[0x8], cpu.v[0xC]);
-    std.debug.warn("v01[{X:0>2}] v05[{X:0>2}] v09[{X:0>2}] v13[{X:0>2}]\n", cpu.v[0x1], cpu.v[0x5], cpu.v[0x9], cpu.v[0xD]);
-    std.debug.warn("v02[{X:0>2}] v06[{X:0>2}] v10[{X:0>2}] v14[{X:0>2}]\n", cpu.v[0x2], cpu.v[0x6], cpu.v[0xA], cpu.v[0xE]);
-    std.debug.warn("v03[{X:0>2}] v07[{X:0>2}] v11[{X:0>2}] v15[{X:0>2}]\n", cpu.v[0x3], cpu.v[0x7], cpu.v[0xB], cpu.v[0xF]);
+    std.debug.warn("v00[{X:0>2}] v04[{X:0>2}] v08[{X:0>2}] v12[{X:0>2}]\n", .{ cpu.v[0x0], cpu.v[0x4], cpu.v[0x8], cpu.v[0xC] });
+    std.debug.warn("v01[{X:0>2}] v05[{X:0>2}] v09[{X:0>2}] v13[{X:0>2}]\n", .{ cpu.v[0x1], cpu.v[0x5], cpu.v[0x9], cpu.v[0xD] });
+    std.debug.warn("v02[{X:0>2}] v06[{X:0>2}] v10[{X:0>2}] v14[{X:0>2}]\n", .{ cpu.v[0x2], cpu.v[0x6], cpu.v[0xA], cpu.v[0xE] });
+    std.debug.warn("v03[{X:0>2}] v07[{X:0>2}] v11[{X:0>2}] v15[{X:0>2}]\n", .{ cpu.v[0x3], cpu.v[0x7], cpu.v[0xB], cpu.v[0xF]});
 
     os.putPixel(16, 0, shortToColor(cpu.pc));
     os.putPixel(16, 1, shortToColor(@intCast(u16, cpu.sp)));
@@ -265,71 +265,70 @@ fn debug(os: *os_pkg.Os, cpu: *cpu_pkg.Cpu) void {
     os.putPixel(18, 0, byteToColor(cpu.timer_delay));
     os.putPixel(18, 1, byteToColor(cpu.timer_sound));
 
-    std.debug.warn("pc[{X:0>4}] sp[  {X:0>2}]\n", cpu.pc, cpu.sp);
-    std.debug.warn(" i[{X:0>4}] fp[{X:0>4}]\n", cpu.i, cpu.fp);
-    std.debug.warn(" d[  {X:0>2}]  s[  {X:0>2}]\n", cpu.timer_delay, cpu.timer_sound);
+    std.debug.warn("pc[{X:0>4}] sp[  {X:0>2}]\n", .{cpu.pc, cpu.sp});
+    std.debug.warn(" i[{X:0>4}] fp[{X:0>4}]\n", .{cpu.i, cpu.fp});
+    std.debug.warn(" d[  {X:0>2}]  s[  {X:0>2}]\n", .{cpu.timer_delay, cpu.timer_sound});
 
-    std.debug.warn("opcode: ");
+    std.debug.warn("opcode: ", .{});
     var mem: []u8 = alloc.alloc(u8, 2) catch {
-        std.debug.warn("\n");
+        std.debug.warn("\n", .{});
         return;
     };
     mem[0] = @intCast(u8, cpu.opcode >> 8);
     mem[1] = @intCast(u8, (cpu.opcode << 8) >> 8);
     cpu_pkg.disassemble(mem, 2, false);
 
-    std.debug.warn("operand: ");
+    std.debug.warn("operand: ", .{});
     cpu.operand.debug();
-    std.debug.warn("\n");
+    std.debug.warn("\n", .{});
 }
 
 fn dumpMem(start: u32, mem: []u8, len: usize) void {
     var a: u32 = start;
     var awritten: u32 = 0;
-    std.debug.warn("    ");
+    std.debug.warn("    ", .{});
     while ((a - start) < 64) : (a += 1) {
         awritten += 1;
         if ((a - start) < 32) {
-            std.debug.warn("{X:0>2} ", a - start);
+            std.debug.warn("{X:0>2} ", .{a - start});
         } else if ((a - start) < 63) {
-            std.debug.warn("---");
+            std.debug.warn("---", .{});
         }
         if (awritten % 4 == 0) {
             if ((a - start) < 32) {
-                std.debug.warn("  ");
+                std.debug.warn("  ", .{});
             } else {
-                std.debug.warn("--");
+                std.debug.warn("--", .{});
             }
         }
         if (awritten % 64 == 0) {
-            std.debug.warn("\n");
+            std.debug.warn("\n", .{});
         } else if (awritten % 32 == 0) {
-            std.debug.warn("\n  +-");
+            std.debug.warn("\n  +-", .{});
         }
     }
-
 
     var b: u32 = 0;
     var b2: u32 = (start & 0xFF00) >> 8;
     var i: u32 = 0;
     var written: u32 = 0;
-    std.debug.warn("{X:0>2}| ", b2);
+    std.debug.warn("{X:0>2}| ", .{b2});
     while (i < len) : (i += 1) {
         var byte = mem[i];
         written += 1;
-        std.debug.warn("{X:0>2} ", byte);
+        std.debug.warn("{X:0>2} ", .{byte});
         if (written % 4 == 0) {
-            std.debug.warn("  ");
+            std.debug.warn("  ", .{});
         }
         if (written % 32 == 0) {
             b2 += 2;
             written = 0;
-            std.debug.warn("\n");
-            std.debug.warn("{X:0>2}| ", b2);
+            std.debug.warn("\n", .{});
+            std.debug.warn("{X:0>2}| ", .{b2});
             b += 1;
         }
     }
-    std.debug.warn("\n");
+    std.debug.warn("\n", .{});
 }
 
 test "" {

@@ -3,9 +3,7 @@ const mem_pkg = @import("memory.zig");
 const video_pkg = @import("video.zig");
 const input_pkg = @import("input.zig");
 
-const MemoryError = error {
-    ProgramTooLarge,
-};
+const MemoryError = error{ProgramTooLarge};
 
 pub const Bus = struct {
     input: *input_pkg.Input,

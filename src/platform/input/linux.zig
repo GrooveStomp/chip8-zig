@@ -93,7 +93,6 @@ pub fn processEvent(pressedKeys: []bool, ev: *event.Event) void {
         c.MotionNotify => {
             // TODO: Mouse
         },
-        else => {
-        },
+        else => {},
     }
 }

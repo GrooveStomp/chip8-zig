@@ -126,14 +126,14 @@ pub const Os = struct {
 
         os.window = c.XCreateWindow(os.display, os.window_root, 30, 30, width * scale, height * scale, 0, visual_info.*.depth, c.InputOutput, visual_info.*.visual, c.CWColormap | c.CWEventMask, &os.x_window_atts);
 
-        var wm_delete = c.XInternAtom(os.display, c"WM_DELETE_WINDOW", 1);
+        var wm_delete = c.XInternAtom(os.display, "WM_DELETE_WINDOW", 1);
         success = c.XSetWMProtocols(os.display, os.window, &wm_delete, 1);
         if (success < 0) return error.Unexpected;
 
         success = c.XMapWindow(os.display, os.window);
         if (success < 0) return error.Unexpected;
 
-        success = c.XStoreName(os.display, os.window, c"GrooveStomp's Chip-8 Emulator v2");
+        success = c.XStoreName(os.display, os.window, "GrooveStomp's Chip-8 Emulator v2");
         if (success < 0) return error.Unexpected;
     }
 
@@ -151,22 +151,22 @@ pub const Os = struct {
         self.gl_device_ctx = c.glXCreateContext(self.display, self.visual_info, null, c.GL_TRUE);
         var changed = c.glXMakeCurrent(self.display, self.window, self.gl_device_ctx);
         if (changed == 0) {
-            std.debug.warn("Couldn't make context current\n");
+            std.debug.warn("Couldn't make context current\n", .{});
         }
 
         var x_window_atts: c.XWindowAttributes = undefined;
         var rc = c.XGetWindowAttributes(self.display, self.window, &x_window_atts);
         if (rc == 0) {
-            std.debug.warn("Couldn't get window attributes\n");
+            std.debug.warn("Couldn't get window attributes\n", .{});
         }
         c.glViewport(0, 0, x_window_atts.width, x_window_atts.height);
 
-        self.gl_swap_interval = c.glXGetProcAddress(c"glXSwapIntervalEXT");
+        self.gl_swap_interval = c.glXGetProcAddress("glXSwapIntervalEXT");
 
         if (self.gl_swap_interval) |func| {
             @ptrCast(fn(display: ?*c.Display, drawable: c.Drawable, interval: i32)void, func)(self.display, self.window, 0);
         } else {
-            std.debug.warn("Couldn't setup gl_swap_interval, so framerate is capped to monitor's refresh rate\n");
+            std.debug.warn("Couldn't setup gl_swap_interval, so framerate is capped to monitor's refresh rate\n", .{});
         }
 
         c.glClearColor(0.0, 0.0, 0.0, 1.0);

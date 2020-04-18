@@ -2,7 +2,7 @@ const builtin = @import("builtin");
 const std = @import("std");
 const event = @import("event.zig");
 
-const host = switch(builtin.os) {
+const host = switch (builtin.os.tag) {
     .linux => @import("input/linux.zig"),
     else => @import("input/undefined.zig"),
 };
@@ -18,12 +18,11 @@ const ButtonState = struct {
 // TODO: mouse, joypad
 
 pub const Input = struct {
-    key_states: [@memberCount(Key)]ButtonState,
-    new_presses: [@memberCount(Key)]bool,
-    old_presses: [@memberCount(Key)]bool,
+    key_states: [std.meta.fields(Key).len]ButtonState,
+    new_presses: [std.meta.fields(Key).len]bool,
+    old_presses: [std.meta.fields(Key).len]bool,
 
-    pub fn init(input: *Input) void {
-    }
+    pub fn init(input: *Input) void {}
 
     pub fn deinit(input: *Input, alloc: *std.mem.Allocator) void {
         alloc.destroy(input);
