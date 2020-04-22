@@ -28,6 +28,7 @@ const timer_ns = sToNs(hz(60));
 const frame_ns = sToNs(hz(180));
 const video_scale = 10;
 var debug_enabled = false;
+var sound_playing = false;
 
 pub fn main() !u8 {
     const args = try std.process.argsAlloc(alloc);
@@ -185,10 +186,12 @@ pub fn main() !u8 {
 
             if (timer.read() >= @floatToInt(u64, timer_ns)) {
                 cpu.tickTimers();
-                if (cpu.timer_sound > 0) {
+                if (cpu.timer_sound > 0 and !sound_playing) {
                     sound.start();
-                } else {
+                    sound_playing = true;
+                } else if (cpu.timer_sound <= 0 and sound_playing) {
                     sound.stop();
+                    sound_playing = false;
                 }
                 timer.reset();
             }
